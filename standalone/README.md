@@ -89,7 +89,7 @@ site-packages
 ```
 *mypythonscripts.pth* contains:
 ```
-someprefix\...\my_python_scripts_folder\myscript_folder
+someprefix\my_python_scripts_folder\myscript_folder
 ```
 
 Now the path to *myscript_folder* is automatically added to *sys.path*, and *myscript.py* can be run with `python -m myscript someinputfile`.
