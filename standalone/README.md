@@ -68,7 +68,7 @@ Given the above directory structure, just run `pip install -e .` from *myscript_
 - Some more info about [*site-packages*](https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory) from SO.
 - Running `pip install -e .` creates a file *myscript_editable.egg-link* in *site-packages* ([egg-link doc from setuptools](https://setuptools.readthedocs.io/en/latest/formats.html#egg-links)). This file contains the path of the folder where *setup.py* lies (same as in *easy-install.pth*). In that folder, a folder *myscript_editable.egg-info* is created, it contains the project’s metadata ([more info](https://setuptools.readthedocs.io/en/latest/formats.html#eggs-and-their-formats)). In our case, it doesn't contain much as our project is really minimal. But if we were to change *setup.py*, we'd have to run `pip install -e .` gain to reflect those changes.
 
-## Solution 2: add a path configuration file
+## Solution 2: add a *path configuration file*
 
 This solution, similar to `solution 1`, is even more straigthforward. **We just add a path configuration file *mypythonscripts.pth* including *myscript.py*'s folder at the root of *site-packages*.**
 
