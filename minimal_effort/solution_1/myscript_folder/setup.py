@@ -1,6 +1,6 @@
 from setuptools import setup
 
 setup(
-    name="myscript_editable",
+    name="myscripteditable",
     install_requires=["lxml"],
 )
