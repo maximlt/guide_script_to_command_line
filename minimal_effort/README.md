@@ -1,9 +1,9 @@
 # From a standalone script to a command line tool with minimal effort
 
-## The situation
+## Context
 
 We have:
-* A single Python script [*myscript.py*](myscript.py) parameterized with one hard-coded input path
+* A single Python script [*parsenote.py*](parsenote.py) parameterized with one hard-coded input path
 * It has no local dependencies (i.e. **no** `import myotherscript`)
 * It has one external dependency (`lxml`, but note that this isn't very important, it could either lots of them of none of them)
 ```python
@@ -11,7 +11,7 @@ r"""Simple script that does something with one input file.
 
 Usage:
 - Set the path of the input file in INPUTFILE
-- Run `python myscript.py` from the directory of myscript.py
+- Run `python parsenote.py` from the directory of parsenote.py
 """
 from lxml import etree
 
@@ -25,19 +25,19 @@ print(
     f"  -->  {parsed_xml['content']}"
 )
 ```
-* We usually execute it with the command `python myscript.py`
+* We usually execute it with the command `python parsenote.py`
 The output we get with the [example input file](../inputdata/inputfile.xml) is `Note from Bob (18-08-2019)  -->  Call Bill`
 
 It's saved in a convenient location:
 ```
 my_python_scripts_folder
-│   myscript.py
+│   parsenote.py
 ```
 
-**Our goal: With minimal effort, turn this script into a command line tool that accepts the input file path as an argument.**
+**Goal: turn this script with minimal effort into a command line tool that accepts the input file path as an argument.**
 
 Notes:
-- Before running `python myscript.py`, we may have to activate a *conda* environment (`conda activate myenv`) or have Python available globally, if we chose to add *Anaconda/Miniconda* to the PATH during the install process or afterwards (see this [SO](https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10) question for instance).
+- Before running `python parsenote.py`, we may have to activate a *conda* environment (`conda activate myenv`) or have Python available globally, if we chose to add *Anaconda/Miniconda* to the PATH during the install process or afterwards (see this [SO](https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10) question for instance).
 
 ## Reading one command line argument
 
@@ -46,7 +46,7 @@ First, it's required to remove the hard-coded part of the script and change it t
 r"""Simple script that does something with one input file given as an argument.
 
 Usage:
-- Run `python -m myscript path\to\inputfile
+- Run `python -m parsenote path\to\inputfile
 """
 import sys
 from lxml import etree
@@ -67,50 +67,50 @@ print(
 
 The `-e` (same as `--editable`) switch of `pip install` [installs  a project in editable mode (i.e. setuptools “develop mode”) from a local project path](https://pip.pypa.io/en/stable/reference/pip_install/#cmdoption-e). The dot at the end (`.`) just points to the current directory.
 
-Installing a project in *editable* mode means that changes *myscript.py* (not *setup.py*!) are reflected when we run the installed project.
+Installing a project in *editable* mode means that changes *parsenote.py* (not *setup.py*!) are reflected when we run the installed project.
 
 The trick here is that **we're interested in a side effect** of `pip install -e .`: it adds the current folder to [*sys.path*](https://docs.python.org/3/library/sys.html#sys.path) (a list of strings that specifies the search path for modules). In practice, it adds this folder to a [path configuration file](https://docs.python.org/3.7/library/site.html) named *easy_install.pth* and saved in *Lib\site-packages* (run this command to find *site-packages*: `python -c "import site; print(site.getsitepackages())"`). Now if you run `python -c "import sys; print(sys.path)"` you'll see that our project folder is included in the list of paths.
 
-Why is this interesting? Because now *myscript.py* can be executed with the simple command `python -m myscript someinputfile` **from any directory**. We've made *myscript.py* globally available for Python. Running Python with the `-m` flag [searches *sys.path* for the named module and execute its contents as the __main__ module](https://docs.python.org/3.7/using/cmdline.html#cmdoption-m).
+Why is this interesting? Because now *parsenote.py* can be executed with the simple command `python -m parsenote someinputfile` **from any directory**. We've made *parsenote.py* globally available for Python. Running Python with the `-m` flag [searches *sys.path* for the named module and execute its contents as the __main__ module](https://docs.python.org/3.7/using/cmdline.html#cmdoption-m).
 
-So we need to create a [*setup.py*](solution_1/myscript_folder/setup.py) file to indicate *pip* how to install our project. As this whole thing is just a workaround to add our project folder to *sys.path*, we can have a pretty minimal *setup.py*:
+So we need to create a [*setup.py*](solution_1/parsenote_folder/setup.py) file to indicate *pip* how to install our project. As this whole thing is just a workaround to add our project folder to *sys.path*, we can have a pretty minimal *setup.py*:
 ```python
 from setuptools import setup
 
 setup(
-    name="myscripteditable",
+    name="parsenoteeditable",
     install_requires=["lxml"],
 )
 ```
-The `name` keyword isn't important here because we'll always run *myscript.py* with `python -m myscript someinputfile`. It's just useful to see what project/folder we've installed when executing `conda list` or `pip list`. Or to uninstall the project with `pip uninstall myscripteditable`. Tring to `import myscripteditable` will raise a `ModuleNotFoundError` because `myscripteditable` isn't a package. It's possible to `import myscript` but that will also raise an error because *myscript.py* isn't really importable (it's a command line script now after all).
+The `name` keyword isn't important here because we'll always run *parsenote.py* with `python -m parsenote someinputfile`. It's just useful to see what project/folder we've installed when executing `conda list` or `pip list`. Or to uninstall the project with `pip uninstall parsenoteeditable`. Tring to `import parsenoteeditable` will raise a `ModuleNotFoundError` because `parsenoteeditable` isn't a package. It's possible to `import parsenote` but that will also raise an error because *parsenote.py* isn't really importable (it's a command line script now after all).
 
-We've added the `install_requires` keyword just to make sure that the external dependency of *myscript.py* is installed in our conda environment.
+We've added the `install_requires` keyword just to make sure that the external dependency of *parsenote.py* is installed in our conda environment.
 
 
-*setup.py* needs to be saved next to *myscript.py*, here is simple and convenient directory structure:
+*setup.py* needs to be saved next to *parsenote.py*, here is simple and convenient directory structure:
 ```
 my_python_scripts_folder
-└───myscript_folder
-    │   myscript.py
+└───parsenote_folder
+    │   parsenote.py
     │   setup.py
 ```
-Given the above directory structure, just run `pip install -e .` from *myscript_folder*.
+Given the above directory structure, just run `pip install -e .` from *parsenote_folder*.
 
 ### Notes
-- Executing `pip install .` instead of `pip install -e .`  will install *myscripteditable* as defined in *setup.py*, so, it's going to be an "empty" install as no package/module/script is defined in *setup.py*. `python -m myscript someinputfile` will thus fail.
+- Executing `pip install .` instead of `pip install -e .`  will install *parsenoteeditable* as defined in *setup.py*, so, it's going to be an "empty" install as no package/module/script is defined in *setup.py*. `python -m parsenote someinputfile` will thus fail.
 - It is actually possible to install a "package" in development mode with a *setup.py* file as simple as `from setuptools import setup; setup()`. However, that breaks `conda list`. `pip list` doesn't break but displays the package with the name *UNKNOWN*, to remove the package execute `pip uninstall UNKNOWN` (that is weird).
 - Some more info about [*site-packages*](https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory) from SO.
-- Running `pip install -e .` creates a file *myscript_editable.egg-link* in *site-packages* ([egg-link doc from setuptools](https://setuptools.readthedocs.io/en/latest/formats.html#egg-links)). This file contains the path of the folder where *setup.py* lies (same as in *easy-install.pth*). In that folder, a folder *myscript_editable.egg-info* is created, it contains the project’s metadata ([more info](https://setuptools.readthedocs.io/en/latest/formats.html#eggs-and-their-formats)). In our case, it doesn't contain much as our project is really minimal. But if we were to change *setup.py*, we'd have to run `pip install -e .` gain to reflect those changes.
+- Running `pip install -e .` creates a file *parsenote_editable.egg-link* in *site-packages* ([egg-link doc from setuptools](https://setuptools.readthedocs.io/en/latest/formats.html#egg-links)). This file contains the path of the folder where *setup.py* lies (same as in *easy-install.pth*). In that folder, a folder *parsenote_editable.egg-info* is created, it contains the project’s metadata ([more info](https://setuptools.readthedocs.io/en/latest/formats.html#eggs-and-their-formats)). In our case, it doesn't contain much as our project is really minimal. But if we were to change *setup.py*, we'd have to run `pip install -e .` gain to reflect those changes.
 
 ## Solution 2: add a *path configuration file*
 
-This solution, similar to `solution 1`, is even more straigthforward. **We just add a path configuration file *mypythonscripts.pth* including *myscript.py*'s folder at the root of *site-packages*.**
+This solution, similar to `solution 1`, is even more straigthforward. **We just add a path configuration file *mypythonscripts.pth* including *parsenote.py*'s folder at the root of *site-packages*.**
 
 Here is a suggested directory structure for that solution:
 ```
 my_python_scripts_folder
-└───myscript_folder
-    │   myscript.py
+└───parsenote_folder
+    │   parsenote.py
 ```
 
 [*mypythonscripts.pth*](solution_2/mypythonscripts.pth) is added at the root of *site-packages*:
@@ -123,14 +123,14 @@ site-packages
 ```
 *mypythonscripts.pth* contains:
 ```
-someprefix\my_python_scripts_folder\myscript_folder
+someprefix\my_python_scripts_folder\parsenote_folder
 ```
 
-Now the path to *myscript_folder* is automatically added to *sys.path*, and *myscript.py* can be run with `python -m myscript someinputfile`.
+Now the path to *parsenote_folder* is automatically added to *sys.path*, and *parsenote.py* can be run with `python -m parsenote someinputfile`.
 
 ### Notes:
 - Let's assume we have another script we want to turn into a command line tool. It's saved in *myotherscript_folder". Just add the path to this folder on a new line in *mypythonscripts.pth* to make it available (`python -m myotherscript someargs`).
-- Similarly to **Solution 1**, changes brought to *myscript.py* are going to be reflected.
+- Similarly to **Solution 1**, changes brought to *parsenote.py* are going to be reflected.
 
 ## Pros and cons
 
@@ -150,12 +150,12 @@ Now the path to *myscript_folder* is automatically added to *sys.path*, and *mys
 - Cons:
   - We have to manually add a path configuration file in Python's directory structure (potential for creating a huge mess there)
   - It's easy to forget what *mypythoncripts.pth* contains
-  - The path in *mypythonscripts.pth* isn't synchronized at all with the path of *myscript.py*, while *pip* in **Solution 1** ensures a (somewhat loose) link
+  - The path in *mypythonscripts.pth* isn't synchronized at all with the path of *parsenote.py*, while *pip* in **Solution 1** ensures a (somewhat loose) link
 
 
 ## Additional notes
 
-- In both solutions the path of the project folder is appended to *sys.path*. If *myscript* (the name of your script) is already used by another module found in the first paths of *sys.path*, `python -m myscript` will execute that module instead of ours.
+- In both solutions the path of the project folder is appended to *sys.path*. If *parsenote* (the name of your script) is already used by another module found in the first paths of *sys.path*, `python -m parsenote` will execute that module instead of ours.
 - Info about path configuration files found in the Python module *site.py*:
 ```
 A path configuration file is a file whose name has the form
@@ -165,10 +165,10 @@ non-directories) are never added to sys.path; no directory is added to
 sys.path more than once.  Blank lines and lines beginning with
 '#' are skipped. Lines starting with 'import' are executed.
 ```
-- If the script relies on one or more helper scripts located in the same directory, both solutions work without any change. Here is an example with a single helper script for *myscript.py*
+- If the script relies on one or more helper scripts located in the same directory, both solutions work without any change. Here is an example with a single helper script for *parsenote.py*
 ```python
-# helper.py
-"""Helper script for myscript."""
+# xmlparser.py
+"""Helper script for parsenote."""
 from lxml import etree
 
 
@@ -179,19 +179,18 @@ def parse_xml(inputfile):
     return {child.tag: child.text for child in root.getchildren()}
 ```
 ```python
-# myscript.py
+# parsenote.py
 r"""Simple script that does something with one input file.
 
 Usage:
-- Set the path of the input file in INPUTFILE
-- Run `python myscript.py` from the directory of myscript.py
+- Run `python -m parsenote someinputfile`
 """
 import sys
-import helper
+import xmlparser
 
 inputfile = sys.argv[1]
 
-parsed_xml = helper.parse_xml(inputfile)
+parsed_xml = xmlparser.parse_xml(inputfile)
 print(
     f"Note from {parsed_xml['author']} ({parsed_xml['date']})"
     f"  -->  {parsed_xml['content']}"

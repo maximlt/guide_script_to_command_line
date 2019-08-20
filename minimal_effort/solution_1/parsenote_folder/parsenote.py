@@ -1,7 +1,7 @@
 r"""Simple script that does something with one input file given as an argument.
 
 Usage:
-- Run `python -m myscript path\to\inputfile
+- Run `python -m parsenote path\to\inputfile
 """
 import sys
 from lxml import etree

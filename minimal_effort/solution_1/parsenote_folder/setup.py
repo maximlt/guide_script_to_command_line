@@ -1,6 +1,6 @@
 from setuptools import setup
 
 setup(
-    name="myscripteditable",
+    name="parsenoteeditable",
     install_requires=["lxml"],
 )

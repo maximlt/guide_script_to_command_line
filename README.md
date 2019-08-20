@@ -2,7 +2,7 @@
 
 ## Intro
 
-This repo contains examples and explanations about how to turn a simple Python script into a command line script/tool. While this may seem like a trivial task for seasoned developers, this isn't actually easy for beginners or occasional users of Python. The benefit of doing so can be huge though, making availabe (i.e. from the command line prompt) any custom script, ready to fire!
+This repo contains examples and explanations about **how to turn a simple Python script into a command line script/tool**. While this may seem like a trivial task for seasoned developers, this isn't actually easy for beginners or occasional users of Python. The benefits of learning how to make that conversion can be huge though, making availabe (i.e. from the command line prompt) any custom script, ready to fire!
 
 We use an examplary script that parses one XML input file whose path is hard-coded and prints some output. It is demonstrated that building a command line script from that initial script can be achieved with minimal effort. But it is also demonstrated that with some additional but limited work, it is possible to get a quite advanced and robust tool.
 
@@ -21,7 +21,7 @@ It is likely that the solutions would work for a different setup (e.g. Windows 7
 
 [Here](minimal_effort/README.md) you'll find two simple solutions for creating a command line script from a standalone script.
 
-The first one requires to create a *setup.py* file and to run `pip install -e .`. The second one requires to manually add a *path configuration file* (.pth) to *Lib\site-packages*.
+The first one requires to create a *setup.py* file and to run `pip install -e .` , the second one requires to manually add a *path configuration file* (.pth) to *Lib\site-packages*.
 
 Note that both solutions work well with a script that relies on other/helper scripts located in the same directory.
 
