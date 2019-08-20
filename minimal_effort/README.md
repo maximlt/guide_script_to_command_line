@@ -39,7 +39,7 @@ my_python_scripts_folder
 Notes:
 - Before running `python parsenote.py`, we may have to activate a *conda* environment (`conda activate myenv`) or have Python available globally, if we chose to add *Anaconda/Miniconda* to the PATH during the install process or afterwards (see this [SO](https://stackoverflow.com/questions/44597662/conda-command-is-not-recognized-on-windows-10) question for instance).
 
-## Reading one command line argument
+## Read one command line argument
 
 First, it's required to remove the hard-coded part of the script and change it to read the command line argument (here, an input file path) it's going to be called with. Note that just a couple of changes were required.
 ```python

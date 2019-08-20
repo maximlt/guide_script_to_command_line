@@ -1,6 +1,6 @@
 # Improving the minimal command line tool
 
-## The situation
+## Context
 
 We have:
 * A Python script [*parsenote.py*](parsenote.py)
@@ -8,7 +8,7 @@ We have:
 * It has one local dependency (i.e. `import xmlhelper`)
 ```python
 # parsenote.py
-r"""Simple script that does something with one input file.
+"""Simple script that does something with one input file.
 
 Usage:
 - Run `python parsenote.py someinputfile`
@@ -36,7 +36,7 @@ def parse_xml(inputfile):
     return {child.tag: child.text for child in root.getchildren()}
 
 ```
-* We execute it with the command `python parsenote.py someinputfile` or with `python -m parsenote someinputfile` (see [here](..\minimal_effort\README.md))
+* We execute it with the command `python parsenote.py someinputfile` or with `python -m parsenote someinputfile` (see [here](../minimal_effort/README.md))
 The output we get with the [example input file](../inputdata/inputfile.xml) is `Note from Bob (18-08-2019)  -->  Call Bill`
 
 Both files are saved next to each other:
@@ -56,13 +56,14 @@ While the above script can be used as a command line tool, it has the following 
   - The code in *parsenote.py* cannot be reused easily
   - There is no validation of the command line argument(s) provided by the user
 - Distribution:
-  - The solutions introduced in the section [*minimal_effort*]((..\minimal_effort\README.md)) are kind of brittle
+  - The solutions introduced in the section [*minimal_effort*]((../minimal_effort/README.md)) are kind of brittle
 
 **Goal: improve the code, its documentation and its distribution with an advanced, but still understandable, solution**
 
-## Improving it
+## Solution
 
 ### What we've done:
+
 - Distribution:
   - A package is created and made installable
     - *parsenote.py* and *xmlhelper.py* are placed in a subfolder *parsenote*
@@ -85,7 +86,19 @@ While the above script can be used as a command line tool, it has the following 
     - Runs only if the script is executed directly
   - The local imports are adapted to the package format
 
-### Modified *parsenote.py* and *xmlhelper.py*
+### New directory structure
+
+```
+my_python_scripts_folder
+└───parsenote_folder
+    │   setup.py
+    └───parsenote
+        │   __init__.py
+        │   parsenote.py
+        │   xmlhelper.py
+```
+
+### Modified [*parsenote.py*](solution/parsenote_folder/parsenote/parsenote.py) and [*xmlhelper.py*](solution/parsenote_folder/parsenote/xmlhelper.py)
 
 ```python
 # parsenote_folder\parsenote\parsenote.py
@@ -187,7 +200,7 @@ def parse_xml(xml_file):
     return {child.tag: child.text for child in root.getchildren()}
 ```
 
-### New *\__init__.py* file
+### New [*\__init__.py*](solution/parsenote_folder/parsenote/__init__.py) file
 
 This file could actually be empty and the code would still work. However, without much
 work, we make the content of the *parsenote* package more discovarable to the user (including ourself in 3 weeks).
@@ -203,7 +216,7 @@ from . import parsenote, xmlhelper
 __all__ = ["parsenote", "xmlhelper"]
 ```
 
-### New *setup.py* file
+### New [*setup.py*](solution/parsenote_folder/setup.py) file
 
 The content of *setup.py* could be more minimal, but, the suggested one is
 already quite short and pretty straightforward to complete.

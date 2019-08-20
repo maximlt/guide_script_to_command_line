@@ -25,6 +25,23 @@ The first one requires to create a *setup.py* file and to run `pip install -e .`
 
 Note that both solutions work well with a script that relies on other/helper scripts located in the same directory.
 
+  * [Minimal Effort](minimal_effort/README.md)
+    * [Context](minimal_effort/README.md##context)
+    * [Read one command line argument](minimal_effort/README.md##read-one-command-line-argument)
+    * [Solution 1: *pip install -e .*](minimal_effort/README.md##solution-1-pip-install-e)
+    * [Solution 2: add a *path configuration file*](minimal_effort/README.md##solution-2-add-a-path-configuration-file)
+    * [Pros and Cons](minimal_effort/README.md##pros_and_cons)
+    * [## Additional notes](minimal_effort/README.md##additional-notes)
+
+## A slightly more advanced case with a script supported by another local script
+
+[Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (in practice, it does `import somehelperscript`). This solution is slightly more advanced than the previous two solutions we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: ref), they make our script more understanble, robust and reusable.
+
+  * [More Advanced Case](more_advanced/README.md)
+    * [Context](more_advanced/README.md##context)
+    * [Problem](more_advanced/README.md##problem)
+    * [Solution](more_advanced/README.md##solution)
+
 [the `scripts` keyword](https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html#the-scripts-keyword-argument)
 
 [example with `py_modules`](https://docs.python.org/3/distutils/introduction.html#a-simple-example)
@@ -49,24 +66,6 @@ Note that both solutions work well with a script that relies on other/helper scr
 
 
 
-```
-my_python_scripts_folder
-│   README.md
-│   file001.txt
-│
-└───folder1
-│   │   file011.txt
-│   │   file012.txt
-│   │
-│   └───subfolder1
-│       │   file111.txt
-│       │   file112.txt
-│       │   ...
-│
-└───folder2
-    │   file021.txt
-    │   file022.txt
-```
 
 ## Notes:
 * pip install -e . based on a setup.py with scripts=['myscript.py'] adds the folder where setup.py is saved to sys.path (!!! If myscript.py next to setup.py, e.g. at src/myscript.py, it's not going to work) and adds an .egg-link file in site-packages containing
