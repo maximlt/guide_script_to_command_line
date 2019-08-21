@@ -155,7 +155,7 @@ Now the path to *parsenote_folder* is automatically added to *sys.path*, and *pa
 
 ## Additional notes
 
-- In both solutions the path of the project folder is appended to *sys.path*. If *parsenote* (the name of your script) is already used by another module found in the first paths of *sys.path*, `python -m parsenote` will execute that module instead of ours.
+- In both solutions the path of the project folder is appended to *sys.path*. If *parsenote* (the name) is already used by another module found in the first paths of *sys.path*, `python -m parsenote` will execute that module instead of ours.
 - Info about path configuration files found in the Python module *site.py*:
 ```
 A path configuration file is a file whose name has the form

@@ -25,22 +25,22 @@ The first one requires to create a *setup.py* file and to run `pip install -e .`
 
 Note that both solutions work well with a script that relies on other/helper scripts located in the same directory.
 
-  * [Minimal Effort](minimal_effort/README.md)
-    * [Context](minimal_effort/README.md##context)
-    * [Read one command line argument](minimal_effort/README.md##read-one-command-line-argument)
-    * [Solution 1: *pip install -e .*](minimal_effort/README.md##solution-1-pip-install-e)
-    * [Solution 2: add a *path configuration file*](minimal_effort/README.md##solution-2-add-a-path-configuration-file)
-    * [Pros and Cons](minimal_effort/README.md##pros_and_cons)
-    * [## Additional notes](minimal_effort/README.md##additional-notes)
+[Minimal Effort](minimal_effort/README.md)
+* [Context](minimal_effort/README.md#context)
+* [Read one command line argument](minimal_effort/README.md#read-one-command-line-argument)
+* [Solution 1: *pip install -e .*](minimal_effort/README.md#solution-1-pip-install-e)
+* [Solution 2: add a *path configuration file*](minimal_effort/README.md#solution-2-add-a-path-configuration-file)
+* [Pros and Cons](minimal_effort/README.md#pros_and_cons)
+* [Additional notes](minimal_effort/README.md#additional-notes)
 
 ## A slightly more advanced case with a script supported by another local script
 
-[Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (in practice, it does `import somehelperscript`). This solution is slightly more advanced than the previous two solutions we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: ref), they make our script more understanble, robust and reusable.
+[Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (`import somehelperscript`). This solution is slightly more advanced compared to the previous two solutions because we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: add ref), they make our script more understandable, robust and reusable.
 
-  * [More Advanced Case](more_advanced/README.md)
-    * [Context](more_advanced/README.md##context)
-    * [Problem](more_advanced/README.md##problem)
-    * [Solution](more_advanced/README.md##solution)
+[More Advanced Case](more_advanced/README.md)
+* [Context](more_advanced/README.md#context)
+* [Problem](more_advanced/README.md#problem)
+* [Solution](more_advanced/README.md#solution)
 
 [the `scripts` keyword](https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html#the-scripts-keyword-argument)
 
@@ -49,21 +49,7 @@ Note that both solutions work well with a script that relies on other/helper scr
 [minimal directory structure](https://stackoverflow.com/questions/28444747/whats-the-minimal-directory-structure-to-make-setuptools-work-with-one-file-py)
 
 ## TODO
-  - What if I add myscript.py to The PATH? Can Python find it?
   - List at the end all the different ways to install it (easily): entry_points, py_modules, scripts, PYTHONPATH, .pth in site-packages (https://stackoverflow.com/questions/12257747/permanently-adding-a-file-path-to-sys-path-in-python, although there's an ongoing discussion about them here https://bugs.python.org/issue33944)
-  - Switch from `scripts` to `entry_points` in *setup.py* because the former seems not to be used so much and it's not clear what it does exactly (https://stackoverflow.com/questions/45114076/python-setuptools-using-scripts-keyword-in-setup-py) and the latter is the recommended way (https://github.com/pypa/sampleproject/blob/master/setup.py, https://stackoverflow.com/questions/23324353/pros-and-cons-of-script-vs-entry-point-in-python-command-line-scripts)
-  - Check how to exit the CLI: return or import sys; sys.exit() ? Or maybe sys.exit(cli()) (See CPython:timeit.py for a great example or https://stackoverflow.com/questions/5280203/what-does-this-mean-exit-main, and look for what cli() should return between 0, 1, 2, etc.)
-  - Check whether installing the dependency this way works (starts from a fresh environment)
-  - Alternative to consider: (1) add the file folder path to the PATH, (2) execute `python myscript.py` or `python myscript` if *myscript* is a folder containing *\__main__.py* and *some_other_file.py*?
-  - Add more info about the general setup? (conda? windows?)
-
-  - Difference between sys.path and PYTHONPATH? From `python --help`:
-```
-  PYTHONPATH   : ';'-separated list of directories prefixed to the
-               default module search path.  The result is sys.path.
-```
-
-
 
 
 
@@ -209,6 +195,4 @@ We took advantage of turning the script into a command line tool for improving, 
 - The logic was divided into two functions, this creates an interface and makes the code more reusable: someone can only import the first function to write another script. It's also now easier to add more functionalities.
 
 ## Notes
-- TODO: Descripts scripts rather than entry_points (It is certainly possible to add an **entry_point** to *setup.py* in order to execute directly `myscript someinput.file` but that's already simply enough)
-- `scripts=['a_python_script.py', 'a_batch_script.bat']` adds these files to the *Scripts* folder of the activated *conda* environment. If one of these files is Python script, then it's required to configure Windows so that Python files are automatically executed. That can be achieved easily: select *python.exe* as the default program to run *\*.py* files (*pythonw.exe* is more for GUI programs). Then just run `a_python_script` from the command line in the activated environment.
 - **flit** can do pretty much the same install with a simple *myproject.toml* instead of *setup.py*, but as of today (08/2019), `flit install -s` or `flit install --pth-file` seems to break `conda list` on Windows
