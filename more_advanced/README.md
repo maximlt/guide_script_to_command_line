@@ -1,3 +1,6 @@
+* [Improving the minimal command line tool](#improving-the-minimal-command-line-tool)
+  * [Context](#context)
+
 # Improving the minimal command line tool
 
 ## Context
@@ -8,7 +11,7 @@ We have:
 * It has one local dependency (i.e. `import xmlhelper`)
 ```python
 # parsenote.py
-"""Simple script that does something with one input file.
+"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Run `python parsenote.py someinputfile`
@@ -60,7 +63,7 @@ While the above script can be used as a command line tool, it has the following 
 
 **Goal: improve the code, its documentation and its distribution with an advanced, but still understandable, solution**
 
-## Solution
+## Suggested solution
 
 ### What we've done:
 
@@ -251,21 +254,25 @@ setup(
 )
 ```
 
-# Alternative ways to deploy the scripts
+# Alternative ways to distribute the scripts
 
-## Use *__main__.py*
+See the [*distutils doc*](https://docs.python.org/3.7/distutils/examples.html) for more details about how to indicate *setuptools.setup* where to find our two scripts.
+
+## Use *\__main__.py*
 
 We just need to add a file *\__main__.py* in the package folder:
 
 ```python
-# parsenote/__main__.py
+# parsenote\__main__.py
 from .parsenote import main
 main()
 ```
 
 Now executing `python -m parsenote someinputfile` runs *\__main__.py* and excute the *main* function.
 
-## Use of `scripts` keyword in *setup.py*
+## Use of the `scripts` keyword in *setup.py*
+
+### Intro
 
 Let's say we have the following *setup.py* file:
 ```python
@@ -276,16 +283,7 @@ setup(
     scripts=["a_python_script.py", "a_batch_script.bat"],
 )
 ```
-`scripts=['a_python_script.py', 'a_batch_script.bat']` adds these files to the *Scripts* folder of the activated *conda* environment. Because the *Scripts* folder is in the PATH, these files can be run directly from the command line prompt This means that they can be executed directly from the command prompt.
-
-References:
-- https://stackoverflow.com/questions/23324353/pros-and-cons-of-script-vs-entry-point-in-python-command-line-scripts
-- https://stackoverflow.com/questions/45114076/python-setuptools-using-scripts-keyword-in-setup-py
-
-
-## Using `scripts` keyword in *setup.py*
-
-With those solutions *parsenote* cannot be imported because *\Scripts* isn't in *sys.path*.
+`scripts=['a_python_script.py', 'a_batch_script.bat']` adds these files to the *Scripts* folder of the activated *conda* environment. In that folder you'll find *pip.exe* for example, so run `where pip` to locate it). Because the *Scripts* folder is in the PATH, these files can be run directly from the command line prompt.
 
 ### Solution 1: simple batch file executing Python
 
@@ -409,8 +407,10 @@ setup(
 
 ### Notes
 
+- With those solutions *parsenote* cannot be imported because *\Scripts* isn't in *sys.path*.
 - For the solution 1 and 2, `conda activate someenv` (given that *conda* is in the PATH) could be added at the top of each batch file to activate a specific environment (e.g. python 3.6) before running to script. In that case, it's not required to `pip install` the scripts as described above, instead, they should just be placed together somewhere in a folder available in the PATH (e.g. add \mypythonscripts\ to the PATH). Note that `conda activate` is a little slow.
 - `pip uninstall parsenote` will remove all the files added to *Scripts*.
+- Two references from SO [here](https://stackoverflow.com/questions/23324353/pros-and-cons-of-script-vs-entry-point-in-python-command-line-scripts) and [there](https://stackoverflow.com/questions/45114076/python-setuptools-using-scripts-keyword-in-setup-py).
 
 ## Use of `py_modules` keyword in *setup.py*
 
@@ -476,3 +476,4 @@ setup(
   PYTHONPATH   : ';'-separated list of directories prefixed to the
                default module search path.  The result is sys.path.
 ```
+- *flit* can do pretty much the same install with a simple *myproject.toml* instead of *setup.py*, but as of today (08/2019), `flit install -s` or `flit install --pth-file` seems to break `conda list` on Windows :(

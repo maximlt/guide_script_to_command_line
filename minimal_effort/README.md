@@ -7,7 +7,7 @@ We have:
 * It has no local dependencies (i.e. **no** `import myotherscript`)
 * It has one external dependency (`lxml`, but note that this isn't very important, it could either lots of them of none of them)
 ```python
-r"""Simple script that does something with one input file.
+r"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Set the path of the input file in INPUTFILE
@@ -26,7 +26,10 @@ print(
 )
 ```
 * We usually execute it with the command `python parsenote.py`
-The output we get with the [example input file](../inputdata/inputfile.xml) is `Note from Bob (18-08-2019)  -->  Call Bill`
+The output we get with the [example input file](../inputdata/inputfile.xml) is:
+```
+Note from Bob (18-08-2019)  -->  Call Bill
+```
 
 It's saved in a convenient location:
 ```
@@ -43,7 +46,7 @@ Notes:
 
 First, it's required to remove the hard-coded part of the script and change it to read the command line argument (here, an input file path) it's going to be called with. Note that just a couple of changes were required.
 ```python
-r"""Simple script that does something with one input file given as an argument.
+r"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Run `python -m parsenote path\to\inputfile
@@ -78,11 +81,11 @@ So we need to create a [*setup.py*](solution_1/parsenote_folder/setup.py) file t
 from setuptools import setup
 
 setup(
-    name="parsenoteeditable",
+    name="parsenote-editable",
     install_requires=["lxml"],
 )
 ```
-The `name` keyword isn't important here because we'll always run *parsenote.py* with `python -m parsenote someinputfile`. It's just useful to see what project/folder we've installed when executing `conda list` or `pip list`. Or to uninstall the project with `pip uninstall parsenoteeditable`. Tring to `import parsenoteeditable` will raise a `ModuleNotFoundError` because `parsenoteeditable` isn't a package. It's possible to `import parsenote` but that will also raise an error because *parsenote.py* isn't really importable (it's a command line script now after all).
+The `name` keyword isn't important here because we'll always run *parsenote.py* with `python -m parsenote someinputfile`. It's just useful to see what project/folder we've installed when executing `conda list` or `pip list`. Or to uninstall the project with `pip uninstall parsenote-editable`. Tring to `import parsenote-editable` will raise a `ModuleNotFoundError` because `parsenote-editable` isn't a package. It's possible to `import parsenote` but that will also raise an error because *parsenote.py* isn't really importable (it's a command line script now after all).
 
 We've added the `install_requires` keyword just to make sure that the external dependency of *parsenote.py* is installed in our conda environment.
 
@@ -97,7 +100,7 @@ my_python_scripts_folder
 Given the above directory structure, just run `pip install -e .` from *parsenote_folder*.
 
 ### Notes
-- Executing `pip install .` instead of `pip install -e .`  will install *parsenoteeditable* as defined in *setup.py*, so, it's going to be an "empty" install as no package/module/script is defined in *setup.py*. `python -m parsenote someinputfile` will thus fail.
+- Executing `pip install .` instead of `pip install -e .`  will install *parsenote-editable* as defined in *setup.py*, so, it's going to be an "empty" install as no package/module/script is defined in *setup.py*. `python -m parsenote someinputfile` will thus fail.
 - It is actually possible to install a "package" in development mode with a *setup.py* file as simple as `from setuptools import setup; setup()`. However, that breaks `conda list`. `pip list` doesn't break but displays the package with the name *UNKNOWN*, to remove the package execute `pip uninstall UNKNOWN` (that is weird).
 - Some more info about [*site-packages*](https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory) from SO.
 - Running `pip install -e .` creates a file *parsenote_editable.egg-link* in *site-packages* ([egg-link doc from setuptools](https://setuptools.readthedocs.io/en/latest/formats.html#egg-links)). This file contains the path of the folder where *setup.py* lies (same as in *easy-install.pth*). In that folder, a folder *parsenote_editable.egg-info* is created, it contains the project’s metadata ([more info](https://setuptools.readthedocs.io/en/latest/formats.html#eggs-and-their-formats)). In our case, it doesn't contain much as our project is really minimal. But if we were to change *setup.py*, we'd have to run `pip install -e .` gain to reflect those changes.
@@ -180,7 +183,7 @@ def parse_xml(inputfile):
 ```
 ```python
 # parsenote.py
-r"""Simple script that does something with one input file.
+"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Run `python -m parsenote someinputfile`

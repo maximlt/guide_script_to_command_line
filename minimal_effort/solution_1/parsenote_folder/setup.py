@@ -1,6 +1,6 @@
 from setuptools import setup
 
 setup(
-    name="parsenoteeditable",
+    name="parsenote-editable",
     install_requires=["lxml"],
 )

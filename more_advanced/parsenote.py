@@ -1,4 +1,4 @@
-r"""Simple script that does something with one input file.
+r"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Run `python -m myscript someinputfile`

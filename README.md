@@ -30,169 +30,257 @@ Note that both solutions work well with a script that relies on other/helper scr
 * [Read one command line argument](minimal_effort/README.md#read-one-command-line-argument)
 * [Solution 1: *pip install -e .*](minimal_effort/README.md#solution-1-pip-install-e)
 * [Solution 2: add a *path configuration file*](minimal_effort/README.md#solution-2-add-a-path-configuration-file)
-* [Pros and Cons](minimal_effort/README.md#pros_and_cons)
+* [Pros and cons](minimal_effort/README.md#pros_and_cons)
 * [Additional notes](minimal_effort/README.md#additional-notes)
 
 ## A slightly more advanced case with a script supported by another local script
 
 [Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (`import somehelperscript`). This solution is slightly more advanced compared to the previous two solutions because we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: add ref), they make our script more understandable, robust and reusable.
 
-[More Advanced Case](more_advanced/README.md)
-* [Context](more_advanced/README.md#context)
-* [Problem](more_advanced/README.md#problem)
-* [Solution](more_advanced/README.md#solution)
+* [More Advanced Case](more_advanced/README.md)
+  * [Context](more_advanced/README.md#context)
+  * [Problem](more_advanced/README.md#problem)
+  * [Suggested solution](more_advanced/README.md#suggested-solution)
 
-[the `scripts` keyword](https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html#the-scripts-keyword-argument)
+[Alternative ways to distribute the scripts](more_advanced/README.md#alternative-ways-to-distribute-the-scripts) are also introduced (*\__main__.py*, `scripts` and `py_modules` keyword in *setup.py*)
 
-[example with `py_modules`](https://docs.python.org/3/distutils/introduction.html#a-simple-example)
+[Use *\__main__.py*](more_advanced/README.md#use-main)
 
-[minimal directory structure](https://stackoverflow.com/questions/28444747/whats-the-minimal-directory-structure-to-make-setuptools-work-with-one-file-py)
+## Summary
 
-## TODO
-  - List at the end all the different ways to install it (easily): entry_points, py_modules, scripts, PYTHONPATH, .pth in site-packages (https://stackoverflow.com/questions/12257747/permanently-adding-a-file-path-to-sys-path-in-python, although there's an ongoing discussion about them here https://bugs.python.org/issue33944)
-
-
-
-## Notes:
-* pip install -e . based on a setup.py with scripts=['myscript.py'] adds the folder where setup.py is saved to sys.path (!!! If myscript.py next to setup.py, e.g. at src/myscript.py, it's not going to work) and adds an .egg-link file in site-packages containing
-```
-D:\GoogleDrive\Code\simplescript\setup_scripts\transformed
-.
-```
-It also adds a folder myscript.egg-info next to setup.py
-Run it from anywhere with:
-`python -m myscript inputfile.txt`
-It can be uninstalled with pip uninstall myscript.
-Other modules, as long as they're sitting next to setup.py and myscript.py, can be imported from myscript.py.
-
-
-
-## Your original script :japanese_ogre:...
+### The original script :japanese_ogre:...
 
 ```python
-"""Simple script that does something with one input file.
+r"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Set the path of the input file in INPUTFILE
-- Run `python path\to\myscript.py`
+- Run `python parsenote.py` from the directory of parsenote.py
 """
-import numpy as np
+from lxml import etree
 
-INPUTFILE = "path\to\input.file"
+INPUTFILE = r"..\inputdata\inputfile.xml"
 
-# Read the inputfile, process it and generate some output
-...
-...
-...
+tree = etree.parse(INPUTFILE)
+root = tree.getroot()
+parsed_xml = {child.tag: child.text for child in root.getchildren()}
+print(
+    f"Note from {parsed_xml['author']} ({parsed_xml['date']})"
+    f"  -->  {parsed_xml['content']}"
+)
+```
+
+We usually execute it with the command `python parsenote.py`
+The output we get with the [example input file](inputdata/inputfile.xml) is:
+```
+Note from Bob (18-08-2019)  -->  Call Bill
 ```
 
 ## ...turned into a command line script :wrench: ...
 
 ```python
-"""Simple command line script that does something with one input file.
+r"""Tool to parse an xml note and print it in a reable format.
 
-Usage: myscript input.file
+Usage:
+- Run `python -m parsenote path\to\inputfile
 """
-import numpy as np
+import sys
+from lxml import etree
 
-def cli():
-    """Wrap all the logic in one function."""
-    # This script requires only one argument.
-    if len(sys.argv) != 2:
-        # Print the help which is the module docstring.
-        print("Usage: myscript input.file")
-        return  # or sys.exit()?
+inputfile = sys.argv[1]
+tree = etree.parse(inputfile)
+root = tree.getroot()
+parsed_xml = {child.tag: child.text for child in root.getchildren()}
+print(
+    f"Note from {parsed_xml['author']} ({parsed_xml['date']})"
+    f"  -->  {parsed_xml['content']}"
+)
 
-    # Get the input file path
-    inputfile = sys.argv[1]
-    # Read the inputfile, process it and generate some output
-    ...
-    ...
-    ...
 ```
 
-## ...made packageable with a *setup.py* file saved in the same directory :two_men_holding_hands: ...
-TODO: check if I need to add an \_\_init__.py
+## ...made distributable with a *setup.py* file saved in the same directory :two_men_holding_hands: ...
+
 ```python
+# setup.py
 from setuptools import setup
 
 setup(
-    name="myscript",
-    install_requires=["numpy"],
-    entry_points={
-        "console_scripts": ["myscript=myscript:cli"]
-    },
+    name="parsenote-editable",
+    install_requires=["lxml"],
 )
 ```
 
 ## ...and a quick way to install it :motorcycle: ...
 
-- Open the Anaconda command prompt and activate the targeted environment with `conda activate envname` (not required if that environment is in the PATH, as it can be for *base* if adding *conda* to PATH was selected during the Anaconda install)
-- `cd path\to\myscriptdirectory`
-- Execute `pip install -e .` to install the script in editable/develop mode. In this way, changes to *myscript.py* will be directely reflected so there is no need to `pip install` it again
+- Open the Anaconda command prompt and activate the targeted environment with `conda activate envname` (not required if that environment is in the PATH, as it can be for *base* if adding *conda* to PATH was selected during the Anaconda install).
+- `cd path\to\parsenote_folder`
+- Execute `pip install -e .` to install the script in editable/develop mode. In this way, changes to *parsenote.py* will be directely reflected so there is no need to `pip install` it again.
 
 ## ...so that it can be used super easily :clap: !
-- Open the Anaconda command prompt and activate the environment where *myscript* is installed (not required if that environment is in the PATH, as it can be for *base* if adding *conda* to PATH was selected during the Anaconda install)
-- Execute `python -m myscript someinput.file`
+
+- Open the Anaconda command prompt and activate the environment where *parsenote* is installed (not required if that environment is in the PATH, as it can be for *base* if adding *conda* to PATH was selected during the Anaconda install)
+- Execute `python -m parsenote someinputfile`
 
 ## But we can go just a little further to improve it :100: ...
 
+### ...by separating the code into two scripts...
+
 ```python
-"""Simple command line script that does something with one input file.
-
-Command line usage: python -m myscript input.file
-
-It can also be imported from another script.
-Example: import myscript; processed_file = myscript.process_file(some.file)
+# parsenote_folder\parsenote\xmlhelper.py
+"""Helper script for parsenote.
 
 Author: myname
 Changelog:
-- 0.1: xx/xx/xxxx: initial script
-- 0.2: xx/xx/xxxx: changed this because of that
+- 0.0.1: xx/xx/xxxx: initial script
+- 0.0.2: xx/xx/xxxx: improved doc
 """
+from lxml import etree
 
-import pathlib
-import numpy as np
 
-def cli(args=None):
-    """Wrap all the logic in one function.
+def parse_xml(xml_file):
+    """Helper function to parse a XML file.
+
+    XML file content:
+    <note>
+    <author>Bob</author>
+    <date>18-08-2019</date>
+    <content>Call Bill</content>
+    </note>
+
+    >>> parse_xml(file)
+    {'author': 'Bob', 'date': '18-08-2019', 'content': 'Call Bill'}
+    """
+    tree = etree.parse(xml_file)
+    root = tree.getroot()
+    return {child.tag: child.text for child in root.getchildren()}
+```
+### ...refactoring and documenting the main code...
+
+```python
+# parsenote_folder\parsenote\parsenote.py
+"""Tool to parse an xml note and print it in a reable format.
+
+Command line usage:
+    - Script executed directly
+        python parsenote.py [-h/--help] xml_file
+    - Script folder in sys.path
+        python -m parsenote [-h/--help] xml_file
+    - Package parsenote installed
+        parsenote [-h/--help] xml_file
+
+Options:
+    -h/--help: Print this doctring and exit
+Argument:
+    xml_file: path to an xml note file
+
+It can also be imported and reused by another script.
+Library usage:
+import parsenote; processed_file = parsenote.print_formatted_note(note)
+
+Author: myname
+Changelog:
+- 0.0.1: xx/xx/xxxx: initial script
+- 0.0.2: xx/xx/xxxx: added command line ability
+"""
+import sys
+from . import xmlhelper
+
+
+def main(args=None):
+    """Used when the script is run directly.
 
     # args: optional list of command line args -> useful for testing cli()
+
+    Return 1 if an error occured, otherwise 0 or None.
     """
     # Get the command line argument.
     if args is None:
-        args = sys.argv[1:]  # sys.argv[0] is excluded because it's TODO: what?.
+        # sys.argv[0] is discarded because it's the module path.
+        args = sys.argv[1:]
 
     # This script requires only one argument.
     if len(args) != 1:
-        # Print the help which is the module docstring.
+        print("Use -h/--help for command line help.")
+        return 0
+    if args[0] in ['-h', '--help']:
+        # The help is the module docstring.
         print(__doc__, end=" ")
-        return  # or sys.exit()?
+        return 1
+    else:
+        input_xml = args[0]
 
-    # Do something with the input file.
-    inputfile = pathlib.Path(args[0])
-    processed_data = process_file(inputfile)
-    generate_output(processed_file)
+    # Main logic.
+    parsed_xml = xmlhelper.parse_xml(input_xml)
+    print_formatted_note(parsed_xml)
 
-def process_file(file):
-    """Read a .xxx file, do something and return the processed data as type xx."""
-    ...
-    return processed_data
 
-def generate_output(data):
-    """Generate output (file, stdout, etc.) given some data of type xx."""
-    ...
+def print_formatted_note(note):
+    """Print a note in a nicely formatted way.
 
+    >>> note = dict(author='Bob', date='18-08-2019', content='Call Bill')
+    >>> print_formatted_note(note)
+    Note from Bob (18-08-2019)  -->  Call Bill
+    """
+    print(
+        f"Note from {note['author']} ({note['date']})"
+        f"  -->  {note['content']}"
+    )
+
+
+# True only when the script is executed directly, not when imported.
 if __name__ == "__main__":
-    cli()
+    sys.exit(main())
+```
+
+### ...turning it into a package...
+
+```python
+# parsenote_folder\parsenote\__init__.py
+
+# Make the modules discovarable when importing the package
+# with `import parsenote`
+from . import parsenote, xmlhelper
+# Add the modules parsenote and xmlhelper to the namespace
+# when doing `from parsenote import *`
+__all__ = ["parsenote", "xmlhelper"]
+```
+
+### ...distributing it properly...
+
+```python
+# parsenote_folder\setup.py
+from setuptools import setup
+
+setup(
+    name="parsenote",  # package name
+    version="0.0.2",  # keep it manually updated
+    description="Tool to parse an xml note and print it in a reable format.",
+    python_requires=">=3.7",  # make sure the right version of python is used
+    install_requires=["lxml>=4.4"],  # make sure it's installed
+    packages=["parsenote"],  # point to the package folder
+    entry_points={
+        "console_scripts": [
+            "parsenote=parsenote.parsenote:main"
+            # parsenote is now a command available in the environment
+            # where it's installed.
+            # it runs the main() function in parsenote.py
+        ]
+    },
+)
 ```
 
 ## ...and be proud of ourself :muscle: !
 
-We took advantage of turning the script into a command line tool for improving, completing and refactoring the code:
-- Useful **docstrings** were added to document the code and indicate future users (including ourself!) how to run it
-- Functions were created and the classic `if __name__ == "__main__":` was added so that the script can be imported (for instance from a script located in the same repo) without any code running during the import
-- The logic was divided into two functions, this creates an interface and makes the code more reusable: someone can only import the first function to write another script. It's also now easier to add more functionalities.
+Now our code is:
+- better documented
+- easier to reuse both as a command line tool (better interactive doc) and a library (it can be imported)
+- easier to distribute (we're not far from being able to upload it on PyPi!)
 
-## Notes
-- **flit** can do pretty much the same install with a simple *myproject.toml* instead of *setup.py*, but as of today (08/2019), `flit install -s` or `flit install --pth-file` seems to break `conda list` on Windows
+## But! There's still a long way to go...
+
+We could add:
+- better input data cheking
+- tests
+- and millions of other things to make it an advanced progam
+
+If this piece of code isn't something too serious (let's say we use it instead of firing Excel and doing the whole process manually), this is already good enough!
