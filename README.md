@@ -25,26 +25,36 @@ The first one requires to create a *setup.py* file and to run `pip install -e .`
 
 Note that both solutions work well with a script that relies on other/helper scripts located in the same directory.
 
-[Minimal Effort](minimal_effort/README.md)
+[Solution with minimal effort](minimal_effort/README.md#from-a-standalone-script-to-a-command-line-tool-with-minimal-effort)
 * [Context](minimal_effort/README.md#context)
 * [Read one command line argument](minimal_effort/README.md#read-one-command-line-argument)
-* [Solution 1: *pip install -e .*](minimal_effort/README.md#solution-1-pip-install-e)
+* [Solution 1: *pip install -e .*](minimal_effort/README.md#solution-1-pip-install--e-)
 * [Solution 2: add a *path configuration file*](minimal_effort/README.md#solution-2-add-a-path-configuration-file)
-* [Pros and cons](minimal_effort/README.md#pros_and_cons)
-* [Additional notes](minimal_effort/README.md#additional-notes)
+* [Pros and cons](minimal_effort/README.md#pros-and-cons)
 
 ## A slightly more advanced case with a script supported by another local script
 
 [Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (`import somehelperscript`). This solution is slightly more advanced compared to the previous two solutions because we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: add ref), they make our script more understandable, robust and reusable.
 
-* [More Advanced Case](more_advanced/README.md)
+[More Advanced Case](more_advanced/README.md)
+* [Improving the minimal command line tool](more_advanced/README.md#improving-the-minimal-command-line-tool)
   * [Context](more_advanced/README.md#context)
   * [Problem](more_advanced/README.md#problem)
   * [Suggested solution](more_advanced/README.md#suggested-solution)
+    * [What we've done](more_advanced/README.md#what-weve-done)
+    * [New directory structure](more_advanced/README.md#new-directory-structure)
+    * [Modified *parsenote.py* and *xmlhelper.py*](more_advanced/README.md#modified-parsenotepy-and-xmlhelperpy)
+    * [New *\__init__.py* file](more_advanced/README.md#new-_init_py-file)
+    * [New *setup.py* file](more_advanced/README.md#new-setuppy-file)
 
-[Alternative ways to distribute the scripts](more_advanced/README.md#alternative-ways-to-distribute-the-scripts) are also introduced (*\__main__.py*, `scripts` and `py_modules` keyword in *setup.py*)
-
-[Use *\__main__.py*](more_advanced/README.md#use-main)
+[Alternative ways to distribute the scripts](more_advanced/README.md#alternative-ways-to-distribute-the-scripts) are also introduced:
+  * [Use *\__main__.py*](more_advanced/README.md#use-_main_py)
+  * [Use of the `scripts` keyword in *setup.py*](more_advanced/README.md#use-of-the-scripts-keyword-in-setuppy)
+    * [Solution 1: simple batch file executing Python](more_advanced/README.md#solution-1-simple-batch-file-executing-python)
+    * [Solution 2: `python -x` hack in a batch file](more_advanced/README.md#solution-2-python--x-hack-in-a-batch-file)
+    * [Solution 3: executable .py files](more_advanced/README.md#solution-3-executable-py-files)
+  * [Use of `py_modules` keyword in *setup.py*](more_advanced/README.md#use-of-py_modules-keyword-in-setuppy)
+  * [Going even further](more_advanced/README.md#going-even-further)
 
 ## Summary
 
@@ -123,7 +133,7 @@ setup(
 
 ## But we can go just a little further to improve it :100: ...
 
-### ...by separating the code into two scripts...
+### ...by separating the code into two scripts :family: ...
 
 ```python
 # parsenote_folder\parsenote\xmlhelper.py
@@ -154,7 +164,7 @@ def parse_xml(xml_file):
     root = tree.getroot()
     return {child.tag: child.text for child in root.getchildren()}
 ```
-### ...refactoring and documenting the main code...
+### ...refactoring and documenting the main code :book: ...
 
 ```python
 # parsenote_folder\parsenote\parsenote.py
@@ -232,7 +242,7 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-### ...turning it into a package...
+### ...turning it into a package :package: ...
 
 ```python
 # parsenote_folder\parsenote\__init__.py
@@ -245,7 +255,7 @@ from . import parsenote, xmlhelper
 __all__ = ["parsenote", "xmlhelper"]
 ```
 
-### ...distributing it properly...
+### ...distributing it properly :mailbox_with_mail: ...
 
 ```python
 # parsenote_folder\setup.py
@@ -276,11 +286,11 @@ Now our code is:
 - easier to reuse both as a command line tool (better interactive doc) and a library (it can be imported)
 - easier to distribute (we're not far from being able to upload it on PyPi!)
 
-## But! There's still a long way to go...
+## But! There's still a long way to go :running: ...
 
 We could add:
-- better input data cheking
+- some sort of input data validation
 - tests
-- and millions of other things to make it an advanced progam
+- and millions of other things to make it an advanced package
 
-If this piece of code isn't something too serious (let's say we use it instead of firing Excel and doing the whole process manually), this is already good enough!
+If this piece of code isn't something too serious (let's say we use it instead of firing Excel and doing some horrible things manually), this is already a great job!

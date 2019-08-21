@@ -1,5 +1,21 @@
 * [Improving the minimal command line tool](#improving-the-minimal-command-line-tool)
   * [Context](#context)
+  * [Problem](#problem)
+  * [Suggested solution](#suggested-solution)
+    * [What we've done](#what-weve-done)
+    * [New directory structure](#new-directory-structure)
+    * [Modified *parsenote.py* and *xmlhelper.py*](#modified-parsenotepy-and-xmlhelperpy)
+    * [New *\__init__.py* file](#new-_init_py-file)
+    * [New *setup.py* file](#new-setuppy-file)
+
+[Alternative ways to distribute the scripts](#alternative-ways-to-distribute-the-scripts) are also introduced:
+  * [Use *\__main__.py*](#use-_main_py)
+  * [Use of the `scripts` keyword in *setup.py*](#use-of-the-scripts-keyword-in-setuppy)
+    * [Solution 1: simple batch file executing Python](#solution-1-simple-batch-file-executing-python)
+    * [Solution 2: `python -x` hack in a batch file](#solution-2-python--x-hack-in-a-batch-file)
+    * [Solution 3: executable .py files](#solution-3-executable-py-files)
+  * [Use of `py_modules` keyword in *setup.py*](#use-of-py_modules-keyword-in-setuppy)
+  * [Going even further](#going-even-further)
 
 # Improving the minimal command line tool
 
@@ -65,7 +81,7 @@ While the above script can be used as a command line tool, it has the following 
 
 ## Suggested solution
 
-### What we've done:
+### What we've done
 
 - Distribution:
   - A package is created and made installable
@@ -461,16 +477,15 @@ setup(
 )
 ```
 
-# General Notes
-
-## Going even further
+# Going even further
 
 - Git the repo
 - Better check the validity of the input argument (is it even an XML file?)
 - Add some tests (see *pytest*) and automate the whole thing (see *tox*)
 - Publish it to PyPi if it's worth sharing!
 
-## Misc
+# Misc
+
 - Difference between sys.path and PYTHONPATH? From `python --help`:
 ```
   PYTHONPATH   : ';'-separated list of directories prefixed to the

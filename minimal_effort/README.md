@@ -1,5 +1,12 @@
 # From a standalone script to a command line tool with minimal effort
 
+* [Context](#context)
+* [Read one command line argument](#read-one-command-line-argument)
+* [Solution 1: *pip install -e .*](#solution-1-pip-install--e-)
+* [Solution 2: add a *path configuration file*](#solution-2-add-a-path-configuration-file)
+* [Pros and cons](#pros-and-cons)
+* [Additional notes](#additional-notes)
+
 ## Context
 
 We have:
