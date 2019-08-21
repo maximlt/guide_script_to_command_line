@@ -1,4 +1,4 @@
-# WIP - Turn a simple Python script into command line tool made available in a conda environment
+# Mini-Guide: Turn a simple Python script into command line tool made available in a conda environment
 
 ## Intro
 
@@ -34,9 +34,9 @@ Note that both solutions work well with a script that relies on other/helper scr
 
 ## A slightly more advanced case with a script supported by another local script
 
-[Here](more_advanced/README.md) you'll a solution for creating a command line script from a script that makes use of another local script (`import somehelperscript`). This solution is slightly more advanced compared to the previous two solutions because we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (TODO: add ref), they make our script more understandable, robust and reusable.
+[Here](more_advanced/README.md) you'll find a solution for creating a command line script from a script that makes use of another local script (`import somehelperscript`). This solution is slightly more advanced compared to the previous two solutions because we improve the code, its documentation and the way it is distributed. While these small changes are limited compared to what experienced developers could do (see [here](https://vincent.bernat.ch/en/blog/2019-sustainable-python-script) and [here](https://www.madmode.com/2019/python-eng.html)), they make our script more understandable, robust and reusable.
 
-[More Advanced Case](more_advanced/README.md)
+[More Advanced Case](more_advanced/README.md#table-of-content)
 * [Improving the minimal command line tool](more_advanced/README.md#improving-the-minimal-command-line-tool)
   * [Context](more_advanced/README.md#context)
   * [Problem](more_advanced/README.md#problem)
@@ -61,7 +61,7 @@ Note that both solutions work well with a script that relies on other/helper scr
 ### The original script :japanese_ogre:...
 
 ```python
-r"""Tool to parse an xml note and print it in a reable format.
+"""Tool to parse an xml note and print it in a reable format.
 
 Usage:
 - Set the path of the input file in INPUTFILE
@@ -293,4 +293,4 @@ We could add:
 - tests
 - and millions of other things to make it an advanced package
 
-If this piece of code isn't something too serious (let's say we use it instead of firing Excel and doing some horrible things manually), this is already a great job!
+If this piece of code isn't something too serious (let's say we use it instead of firing Excel and doing some horrible things manually), **this is already a great job**!

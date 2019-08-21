@@ -1,3 +1,5 @@
+# Table of content
+
 * [Improving the minimal command line tool](#improving-the-minimal-command-line-tool)
   * [Context](#context)
   * [Problem](#problem)
